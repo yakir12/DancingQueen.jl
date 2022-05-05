@@ -20,14 +20,21 @@ struct Log
       println(csvio, now(), ",", join(r, ","))
     end
 
-    t₀ = time_ns()
+    mkpath(dt)
+    i = 0
     videoof = on(frame) do img
-      t = time_ns()
-      if t - t₀ > 1000000000/framerate
-        write(videoio, rotl90(img))
-        t₀ = t
-      end
+      i += 1
+      @async save(joinpath(dt, "$i.jpg"), img)
     end
+
+    # t₀ = time_ns()
+    # videoof = on(frame) do img
+    #   t = time_ns()
+    #   if t - t₀ > 1000000000/framerate
+    #     write(videoio, rotl90(img))
+    #     t₀ = t
+    #   end
+    # end
 
     new(csvio, videoio, csvof, videoof)
   end
