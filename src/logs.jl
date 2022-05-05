@@ -21,10 +21,11 @@ struct Log
     end
 
     mkpath(dt)
+    fspec = FormatExpr("{:07d}.jpg")
     i = 0
     videoof = on(frame) do img
       i += 1
-      @async save(joinpath(dt, "$i.jpg"), img)
+      @async save(joinpath(dt, format(fspec, i)), img)
     end
 
     # t₀ = time_ns()
@@ -45,7 +46,6 @@ function Base.close(l::Log)
   close(l.csvio)
   off(l.videoof)
   close_video_out!(l.videoio)
-  println("done saving!")
 end
 
 Base.close(::Nothing) = nothing
