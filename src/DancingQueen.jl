@@ -1,7 +1,7 @@
 module DancingQueen
 
 using Statistics, Dates, LinearAlgebra
-using VideoIO, GLMakie, AprilTags, LibSerialPort, Distributions, AngleBetweenVectors, Observables, ImageCore
+using VideoIO, GLMakie, AprilTags, LibSerialPort, Distributions, AngleBetweenVectors, Observables, ImageCore, Formatting
 
 using GLMakie: origin, widths
 
