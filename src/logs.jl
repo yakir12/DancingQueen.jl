@@ -22,7 +22,7 @@ struct Log
     i = 0
     videoof = on(frame) do img
       i += 1
-      @async save(joinpath(dt, format(fspec, i)), img')
+      isodd(i) && save(joinpath(dt, format(fspec, i)), img')
     end
 
     new(dt, csvio, csvof, videoof)
@@ -41,7 +41,7 @@ Base.close(::Nothing) = nothing
 function save2vid(fldr)
   files_in = joinpath(fldr, "%07d.jpg")
   file_out = joinpath(fldr, "video.mp4")
-  ffmpeg_exe(`-i $files_in -c:v libx264 -vf fps=30 -pix_fmt yuv420p -loglevel 16 $file_out`)
+  ffmpeg_exe(`-i $files_in -c:v libx264 -vf fps=15 -pix_fmt yuv420p -loglevel 16 $file_out`)
   rm.(glob("$fldr/*.jpg"))
   @info "done saving $fldr"
 end
