@@ -6,11 +6,14 @@ version = "0.1.0"
 [deps]
 AngleBetweenVectors = "ec570357-d46e-52ed-9726-18773498274d"
 AprilTags = "f0fec3d5-a81e-5a6a-8c28-d2b34f3659de"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
 ImageCore = "a09fc81d-aa75-5fe9-8630-4744c3626534"
 LibSerialPort = "a05a14c7-6e3b-5ba9-90a2-45558833e1df"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Observables = "510215fc-4207-5dde-b226-833fc4488ee2"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 VideoIO = "d6d074c3-1acf-5d4c-9a43-ef38773959a2"
 
 [compat]
