@@ -41,7 +41,7 @@ Base.close(::Nothing) = nothing
 function save2vid(fldr)
   files_in = joinpath(fldr, "%07d.jpg")
   file_out = joinpath(fldr, "video.mp4")
-  ffmpeg_exe(`-i $files_in -c:v libx264 -vf fps=30 -pix_fmt yuv420p $file_out`)
+  ffmpeg_exe(`-i $files_in -c:v libx264 -vf fps=30 -pix_fmt yuv420p -loglevel 16 $file_out`)
   rm.(glob("$fldr/*.jpg"))
   @info "done saving $fldr"
 end
