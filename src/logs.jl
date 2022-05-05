@@ -25,7 +25,7 @@ struct Log
     i = 0
     videoof = on(frame) do img
       i += 1
-      @async save(joinpath(dt, format(fspec, i)), img)
+      @async save(joinpath(dt, format(fspec, i)), img')
     end
 
     # t₀ = time_ns()
