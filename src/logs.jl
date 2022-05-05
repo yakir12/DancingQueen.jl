@@ -1,5 +1,6 @@
 struct Log
 
+  name::String
   csvio::IOStream
   # videoio::VideoIO.VideoWriter
   csvof::Observables.ObserverFunction
@@ -8,19 +9,15 @@ struct Log
   function Log(frame, row)
 
     dt = Dates.format(now(), "yyyymmddHHMMSS")
+    mkpath(dt)
 
-    csvio = open(string(dt, ".csv"), "w")
+    csvio = open(joinpath(dt, "data.csv"), "w")
     println(csvio, "datetime,p1x,p1y,p2x,p2y,p3x,p3y,p4x,p4y,red,green,blue,width,azimuth,red_σ,green_σ,blue_σ,width_σ,azimuth_σ,a,b")
-
-    # framerate = 5
-    # encoder_options = (crf=23, preset="medium")
-    # videoio = open_video_out(string(dt, ".mp4"), rotl90(frame[]); framerate, encoder_options)
 
     csvof = on(row) do r
       println(csvio, now(), ",", join(r, ","))
     end
 
-    mkpath(dt)
     fspec = FormatExpr("{:07d}.jpg")
     i = 0
     videoof = on(frame) do img
@@ -28,16 +25,7 @@ struct Log
       @async save(joinpath(dt, format(fspec, i)), img')
     end
 
-    # t₀ = time_ns()
-    # videoof = on(frame) do img
-    #   t = time_ns()
-    #   if t - t₀ > 1000000000/framerate
-    #     write(videoio, rotl90(img))
-    #     t₀ = t
-    #   end
-    # end
-
-    new(csvio, csvof, videoof)
+    new(dt, csvio, csvof, videoof)
   end
 end
 
@@ -45,8 +33,15 @@ function Base.close(l::Log)
   off(l.csvof)
   close(l.csvio)
   off(l.videoof)
-  # close_video_out!(l.videoio)
+  @async save2vid(l.name)
 end
 
 Base.close(::Nothing) = nothing
 
+function save2vid(fldr)
+  files_in = joinpath(fldr, "%07d.jpg")
+  file_out = joinpath(fldr, "video.mp4")
+  ffmpeg_exe(`-i $files_in -c:v libx264 -vf fps=30 -pix_fmt yuv420p $file_out`)
+  rm.(glob("$fldr/*.jpg"))
+  @info "done saving $fldr"
+end
