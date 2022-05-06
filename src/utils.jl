@@ -8,7 +8,7 @@ end
 
 round2deg(x) = string(round(Int, rad2deg(x)), "°")
 
-function close_all(strip, camera, detector)
+function close_all()
   close(camera)
   update_strip!(strip, zeros(5)...)
   close(strip)

@@ -8,6 +8,10 @@ using GLMakie: origin, widths
 export main, close_all
 
 const O = Observable
+const strip = Strip()
+const camera = Camera()
+const detector = AprilTagDetector()
+detector.nThreads = Threads.nthreads()
 
 include("logs.jl")
 include("leds.jl")
@@ -17,34 +21,38 @@ include("utils.jl")
 
 function main()
 
-  strip = Strip()
-  camera = Camera()
-  detector = AprilTagDetector()
-  detector.nThreads = Threads.nthreads()
-
   frame = O(camera.img)
   rect = O(Rect2i((1,1), wh))
   tag = O{Union{Nothing, AprilTag}}(nothing)
+  direction = O{Union{Nothing, Vec2f}}(nothing)
 
   map!(img -> frame2tag(img, rect[], detector), tag, frame)
+  map!(tag2direction, direction, tag)
   map!(t -> change_rect(rect[], t), rect, tag)
-  corners = map(t -> tag2corners(t, rect[]), tag)
 
   fig = Figure()
   ax = Axis(fig[1,1], aspect = AxisAspect(wh[1] / wh[2]))
   image!(ax, frame)
-  poly!(ax, corners, color = RGBAf(0,1,0,0.9))
   poly!(ax, rect, color = :transparent, strokecolor = :red, strokewidth = 1, xautolimits=false, yautolimits=false)
   hidedecorations!(ax)
   hidespines!(ax)
 
-  ledsgrid = labelslidergrid!(fig, ["red", "green", "blue", "width", "azimuth"], (0:255, 0:255, 0:255, 1:2:nleds, range(0, step = 2π/nleds, length = nleds)); formats = ["{:n}", "{:n}", "{:n}", "{:n}", round2deg])#, sliderkw)
-  controls = GridLayout()
-  controls[1,1] = ledsgrid.layout
-  noisegrid = labelslidergrid!(fig, fill("", 5), [0:50, 0:50, 0:50, 0:30, range(0, π/2, 50)]; formats = ["{:n}", "{:n}", "{:n}", "{:n}", round2deg])#, sliderkw)
-  controls[1,2] = noisegrid.layout
-  dynamicgrid = labelslidergrid!(fig, ["a", "b"], (0:0.1:2, range(0, step = 2π/nleds, length = nleds)); formats = ["{:.1f}", round2deg])#, sliderkw)
-  controls[2,:] = dynamicgrid.layout
+  controls = fig[2,1] = GridLayout()
+  ledsgrid = SliderGrid(controls[1,1], 
+                        (label = "red", range = 0:255),
+                        (label = "green", range = 0:255),
+                        (label = "red", range = 0:255),
+                        (label = "width", range = 1:2:nleds),
+                        (label = "azimuth", range = range(0, step = 2π/nleds, length = nleds), format = round2deg))
+  noisegrid = SliderGrid(controls[1,2], 
+                         (; label = "", range = 0:50),
+                         (; label = "", range = 0:50),
+                         (; label = "", range = 0:50),
+                         (; label = "", range = 0:30),
+                         (label = "", range = range(0, π/2, 50), format = round2deg))
+  dynamicgrid = SliderGrid(controls[2,:], 
+                           (label = "a", range = 0:0.1:2, format = "{:.1f}"),
+                           (label = "b", range = range(0, step = 2π/nleds, length = nleds), format = round2deg))
   record = Toggle(fig, active = false)
   record_label = Label(fig, map(x -> x ? "Recording!" : "Not recording", record.active))
   controls[3, :] = grid!(hcat(record, record_label))
@@ -58,12 +66,14 @@ function main()
 
   dynamicobs = [s.value for s in dynamicgrid.sliders]
 
-  p = Ref(0.0)
-  oldu = Ref(Point2f(1,0))
-  on(xys -> dynamic_update(strip, xys, oldu, p, to_value(vs), to_value.(dynamicobs)...), corners)
+  rotations = Ref(0.0)
+  oldu = Ref(Vec2f(1,0))
+  on(direction) do u
+    @async dynamic_update(strip, u, oldu, rotations, to_value(vs), to_value.(dynamicobs)...)
+  end
 
-  row = map(corners) do xys
-    Iterators.flatten((reduce(vcat, xys), to_value.(ledsobs), to_value.(noiseobs), to_value.(dynamicobs)))
+  row = map(direction) do u
+    @async Iterators.flatten((mean(rect[]), atan(u...), rotations[], to_value.(ledsobs), to_value.(noiseobs), to_value.(dynamicobs)))
   end
 
   log = O{Union{Nothing, Log}}(nothing)
@@ -76,14 +86,17 @@ function main()
     end
   end
 
+
   display(fig)
 
-  t = @async while isopen(camera)
+  t = @async while isopen(camera) && events(fig.scene).window_open[]
     frame[] = snap(camera)
     yield()
   end
 
-  return strip, camera, detector
+  return t
+
+  # return strip, camera, detector
 
 end
 

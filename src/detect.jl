@@ -17,8 +17,11 @@ function crop(img, rect)
   img[i, j]
 end
 
-tag2corners(::Nothing, _) = zeros(Point2f, 4)
-tag2corners(tag, rect) = [Point2f(reverse(yx)) + origin(rect) .- 1 for yx in tag.p]
+tag2direction(::Nothing) = nothing
+function tag2direction(tag) 
+  c = Vec2f(tag.H[1:2,3])
+  normalize(sum(p -> Vec2f(p) - c, tag.p[1:2]))
+end
 
 function change_rect(rect, ::Nothing) 
   o = max.(origin(rect) .- widen, (1,1))
@@ -26,7 +29,6 @@ function change_rect(rect, ::Nothing)
   s = min.(o + w .- 1, wh)
   Rect2i(o, s - o .+ 1)
 end
-
 function change_rect(rect, tag)
   o = max.(round.(Int, origin(rect) - min_widths/2 + reverse(tag.H[1:2,3])), (1,1))
   s = min.(o + min_widths .- 1, wh)

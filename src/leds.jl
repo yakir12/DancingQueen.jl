@@ -52,17 +52,15 @@ end
 Base.close(strip::Strip) = close(strip.sp)
 Base.open(strip::Strip) = open(strip.sp)
 
-function dynamic_update(strip, corners, oldu, p, vs, a, b)
-  if !all(iszero, corners)
-    c = mean(corners)
-    u = normalize(mean(corners[1:2]) - c)
-    δ = angle_between(oldu[], u)
-    oldu[] = u
-    p[] += δ
-    red, green, blue, width, α = rand.(vs)
-    α += mod(a*p[] + b, 2π)
-    update_strip!(strip, red, green, blue, width, α)
-  end
+dynamic_update(strip, ::Nothing, oldu, p, vs, a, b) = nothing
+
+function dynamic_update(strip, u, oldu, p, vs, a, b)
+  δ = angle_between(oldu[], u)
+  oldu[] = u
+  p[] += δ
+  red, green, blue, width, α = rand.(vs)
+  α += mod(a*p[] + b, 2π)
+  update_strip!(strip, red, green, blue, width, α)
 end
 
 function angle_between(oldu, newu)
