@@ -17,7 +17,7 @@ const O = Observable
 const strip = Strip()
 const camera = Camera()
 const detector = AprilTagDetector()
-detector.nThreads = Threads.nthreads()
+# detector.nThreads = Threads.nthreads()
 
 function main()
 
