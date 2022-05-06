@@ -14,11 +14,11 @@ include("detect.jl")
 include("utils.jl")
 
 const O = Observable
-const strip = Strip()
-const camera = Camera()
 
 function main()
 
+  strip = Strip()
+  camera = Camera()
   detector = AprilTagDetector()
   detector.nThreads = Threads.nthreads()
 
@@ -95,9 +95,9 @@ function main()
     yield()
   end
 
-  return t
+  # return t
 
-  # return strip, camera, detector
+  return strip, camera, detector
 
 end
 
