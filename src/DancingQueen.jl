@@ -16,10 +16,11 @@ include("utils.jl")
 const O = Observable
 const strip = Strip()
 const camera = Camera()
-const detector = AprilTagDetector()
-# detector.nThreads = Threads.nthreads()
 
 function main()
+
+  detector = AprilTagDetector()
+  detector.nThreads = Threads.nthreads()
 
   frame = O(camera.img)
   rect = O(Rect2i((1,1), wh))
