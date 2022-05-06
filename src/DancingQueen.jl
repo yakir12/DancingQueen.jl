@@ -7,17 +7,17 @@ using GLMakie: origin, widths
 
 export main, close_all
 
-const O = Observable
-const strip = Strip()
-const camera = Camera()
-const detector = AprilTagDetector()
-detector.nThreads = Threads.nthreads()
-
 include("logs.jl")
 include("leds.jl")
 include("camera.jl")
 include("detect.jl")
 include("utils.jl")
+
+const O = Observable
+const strip = Strip()
+const camera = Camera()
+const detector = AprilTagDetector()
+detector.nThreads = Threads.nthreads()
 
 function main()
 
