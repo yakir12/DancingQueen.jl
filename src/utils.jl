@@ -31,11 +31,11 @@ v2fun(v) = () -> v
 #
 #
 
-frame, roi, x, ab, settings = containers()
-fig = figure(frame, roi, x, ab, settings)
-rect = Ref(Rect2i((1,1), wh))
-rotations = Ref(0.0)
-oldu = Ref(Vec2f(1,0))
+# frame, roi, x, ab, settings = containers()
+# fig = figure(frame, roi, x, ab, settings)
+# rect = Ref(Rect2i((1,1), wh))
+# rotations = Ref(0.0)
+# oldu = Ref(Vec2f(1,0))
 
 # n = 100
 # ts = zeros(n)
