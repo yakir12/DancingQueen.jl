@@ -12,7 +12,7 @@ function figure(frame, roi, x, ab, settings)
   ledsgrid = SliderGrid(controls[1,1], 
                         (label = "red", range = 0:255),
                         (label = "green", range = 0:255),
-                        (label = "red", range = 0:255),
+                        (label = "blue", range = 0:255),
                         (label = "width", range = 1:2:nleds),
                         (label = "azimuth", range = range(0, step = 2π/nleds, length = nleds), format = round2deg))
   noisegrid = SliderGrid(controls[1,2], 
