@@ -35,7 +35,7 @@ function containers()
   return frame, roi, x, ab, settings
 end
 
-function oneiteration(rect, oldu, rotations, x, ab)
+function oneiteration(frame, roi, rect, oldu, rotations, x, ab, settings)
   img = snap(camera[])
   tag = frame2tag(img, rect[], detector[])
   c = tag2c(tag)
@@ -53,7 +53,7 @@ function hotloop(frame, roi, x, ab, settings)
   rotations = Ref(0.0)
   oldu = Ref(Vec2f(1,0))
   @async while isopen(camera[])
-    oneiteration(rect, oldu, rotations, x[], ab[])
+    oneiteration(frame, roi, rect, oldu, rotations, x[], ab[], settings)
     yield()
   end
 end
@@ -62,7 +62,7 @@ function reset()
   isnothing(camera[]) || close(camera[])
   camera[] = Camera()
 
-  isnothing(strip[]) || close(stip[])
+  isnothing(strip[]) || close(strip[])
   strip[] = Strip()
 
   isnothing(detector[]) || freeDetector!(detector[]) 
@@ -77,6 +77,7 @@ function main()
   x = containers()
   fig = figure(x...)
   t = hotloop(x...)
+  display(fig)
 
 end
 

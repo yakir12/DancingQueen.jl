@@ -32,9 +32,12 @@ function Base.close(log::Log)
   save2vid(log.name)
 end
 
+torow(::Nothing, rotations, settings) = join((now(), missing, rotations, settings...), ',')
+torow(point, rotations, settings) = join((now(), point, rotations, settings...), ',')
+
 function update_log(log::Log, point, rotations, settings, img)
   if log.open
-    println(log.csvio, join(Iterators.flatten((now(), point, rotations, settings)), ','))
+    println(log.csvio, torow(point, rotations, settings))
     log.i += 1
     save(framename(log.name, log.i), img)
   end
