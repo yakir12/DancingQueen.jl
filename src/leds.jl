@@ -52,14 +52,13 @@ end
 Base.close(strip::Strip) = close(strip.sp)
 Base.open(strip::Strip) = open(strip.sp)
 
-dynamic_update(strip, ::Nothing, oldu, p, vs, a, b) = nothing
+dynamic_update(strip, ::Nothing, _...) = nothing
 
-function dynamic_update(strip, u, oldu, p, vs, a, b)
+function dynamic_update(strip, u, oldu, p, red, green, blue, width, α, ab)
   δ = angle_between(oldu[], u)
   oldu[] = u
   p[] += δ
-  red, green, blue, width, α = rand.(vs)
-  α += mod(a*p[] + b, 2π)
+  α += ab(p[])
   update_strip!(strip, red, green, blue, width, α)
 end
 

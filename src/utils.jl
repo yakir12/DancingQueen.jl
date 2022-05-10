@@ -1,11 +1,3 @@
-intensity_distribution(xs...) = _intensity_distribution.(Iterators.partition(xs, 5)..., (0:255, 0:255, 0:255, 1:2:nleds, range(0, step = 2π/nleds, length = nleds)))
-function _intensity_distribution(μ, σ, support)
-  σ == 0 && return DiscreteNonParametric([μ], [1.0]) 
-  w = pdf.(Normal(μ, σ), support)
-  w ./= sum(w)
-  DiscreteNonParametric(support, w)
-end
-
 round2deg(x) = string(round(Int, rad2deg(x)), "°")
 
 close_all(args) = close_all(args...)
@@ -17,6 +9,17 @@ function close_all(strip, camera, detector)
   freeDetector!(detector)
 end
 
+function intensity_distribution(μ, σ, support)
+    σ == 0 && return () -> μ
+    w = pdf.(Normal(μ, σ), support)
+    w ./= sum(w)
+    d = DiscreteNonParametric(support, w)
+    () -> rand(d)
+end
+
+invok(f) = f()
+v2fun(v) = () -> v
+
 # dark = false
 # if dark
 #   set_theme!(theme_black(); textcolor = :grey30)
@@ -25,3 +28,45 @@ end
 #   set_theme!()
 #   sliderkw = Dict()
 # end
+#
+#
+
+# frame, roi, x, ab, settings = containers()
+# fig = figure(frame, roi, x, ab, settings)
+# rect = Ref(Rect2i((1,1), wh))
+# rotations = Ref(0.0)
+# oldu = Ref(Vec2f(1,0))
+#
+# n = 100
+# ts = zeros(n)
+# for i in 1:n
+#   oneiteration(rect, oldu, rotations, x[], ab[])
+#   yield()
+#   ts[i] = time()
+# end
+# histogram(filter(<(60), 1 ./ diff(ts)))
+# median(filter(<(60), round.(Int, 1 ./ diff(ts))))
+#
+# using BenchmarkTools
+# @benchmark oneiteration($rect, $oldu, $rotations, $(x[]), $(ab[]))
+#
+# 64, 72 ms
+#
+# #
+#
+#
+# function get_img_with_tag()
+#   while isopen(camera[])
+#     img = snap(camera[])
+#     tag = frame2tag(img, rect[], detector[])
+#     if !isnothing(tag)
+#       return img
+#     end
+#   end
+# end
+# frame, roi, x, ab, settings = containers()
+# rect = Ref(Rect2i((1,1), wh))
+# rotations = Ref(0.0)
+# oldu = Ref(Vec2f(1,0))
+# img = get_img_with_tag()
+#

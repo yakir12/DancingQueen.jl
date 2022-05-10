@@ -1,6 +1,7 @@
 const wh = (640, 480)
 
 struct Camera
+  device::String
   o::VideoIO.VideoReader
   buff::Vector{UInt8}
   img
@@ -12,7 +13,7 @@ struct Camera
     h, w = wh
     Y = reshape(b, h, w)
     img = colorview(Gray, normedview(view(Y, h:-1:1, 1:w)))
-    new(o, buff, img)
+    new(device, o, buff, img)
   end
 end
 

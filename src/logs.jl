@@ -1,44 +1,44 @@
-struct Log
+const fspec = FormatExpr("{:07d}.jpg")
 
+framename(dt, i) = joinpath(dt, format(fspec, i))
+
+mutable struct Log
+  open::Bool
   name::String
   csvio::IOStream
-  # videoio::VideoIO.VideoWriter
-  csvof::Observables.ObserverFunction
-  videoof::Observables.ObserverFunction
+  i::Int
+end
 
-  function Log(frame, row)
+function Log() 
+  io = open(tempname(), "w")
+  close(io)
+  Log(false, "tmp", io, 0)
+end
 
-    dt = Dates.format(now(), "yyyymmddHHMMSS")
-    mkpath(dt)
+function Base.open(log::Log)
+  dt = Dates.format(now(), "yyyymmddHHMMSS")
+  mkpath(dt)
+  csvio = open(joinpath(dt, "data.csv"), "w")
+  println(csvio, "datetime,x,y,rotations,red,green,blue,width,azimuth,red_σ,green_σ,blue_σ,width_σ,azimuth_σ,a,b")
+  log.name = dt
+  log.csvio = csvio
+  log.i = 0
+  log.open = true
+end
 
-    csvio = open(joinpath(dt, "data.csv"), "w")
-    println(csvio, "datetime,p1x,p1y,p2x,p2y,p3x,p3y,p4x,p4y,red,green,blue,width,azimuth,red_σ,green_σ,blue_σ,width_σ,azimuth_σ,a,b")
+function Base.close(log::Log)
+  log.open = false
+  close(log.csvio)
+  save2vid(log.name)
+end
 
-    csvof = on(row) do r
-      @async println(csvio, now(), ",", join(r, ","))
-    end
-
-    fspec = FormatExpr("{:07d}.jpg")
-    i = 0
-    videoof = on(frame) do img
-      @async begin
-        i += 1
-        isodd(i) && save(joinpath(dt, format(fspec, i)), img')
-      end
-    end
-
-    new(dt, csvio, csvof, videoof)
+function update_log(log::Log, point, rotations, settings, img)
+  if log.open
+    println(log.csvio, join(Iterators.flatten((now(), point, rotations, settings)), ','))
+    log.i += 1
+    save(framename(log.name, log.i), img)
   end
 end
-
-function Base.close(l::Log) 
-  off(l.csvof)
-  close(l.csvio)
-  off(l.videoof)
-  @async save2vid(l.name)
-end
-
-Base.close(::Nothing) = nothing
 
 function save2vid(fldr)
   files_in = joinpath(fldr, "*.jpg")
