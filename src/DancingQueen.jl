@@ -59,13 +59,15 @@ function hotloop(frame, roi, x, ab, settings)
 end
 
 function reset()
+
   isnothing(camera[]) || close(camera[])
+  sleep(0.5)
   camera[] = Camera()
 
   isnothing(strip[]) || close(strip[])
   strip[] = Strip()
 
-  isnothing(detector[]) || freeDetector!(detector[]) 
+  isnothing(detector[]) || close(detector[]) 
   detector[] = AprilTagDetector()
 end
 
@@ -76,9 +78,10 @@ function main()
 
   x = containers()
   fig = figure(x...)
-  t = hotloop(x...)
+  hotloop(x...)
   display(fig)
 
+  nothing
 end
 
 end

@@ -51,6 +51,7 @@ end
 
 Base.close(strip::Strip) = close(strip.sp)
 Base.open(strip::Strip) = open(strip.sp)
+Base.isopen(strip::Strip) = isopen(strip.sp)
 
 dynamic_update(strip, ::Nothing, _...) = nothing
 

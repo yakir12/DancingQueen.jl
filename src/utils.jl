@@ -1,12 +1,14 @@
 round2deg(x) = string(round(Int, rad2deg(x)), "°")
 
-close_all(args) = close_all(args...)
+Base.close(d::AprilTagDetector) = d.td ≠ C_NULL && freeDetector!(d)
 
-function close_all(strip, camera, detector)
-  close(camera)
-  update_strip!(strip, zeros(5)...)
-  close(strip)
-  freeDetector!(detector)
+function close_all()
+  close(log[])
+  close(camera[])
+  isopen(strip[]) && update_strip!(strip[], zeros(5)...)
+  close(strip[])
+  close(detector[])
+  nothing
 end
 
 function intensity_distribution(μ, σ, support)

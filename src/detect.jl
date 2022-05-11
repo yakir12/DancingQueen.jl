@@ -1,4 +1,4 @@
-tag_pixel_width = 50#37
+tag_pixel_width = 45#37
 w = ceil(Int, tag_pixel_width*sqrt(2))
 const min_widths = Vec2{Int}(w)
 const widen = 5
