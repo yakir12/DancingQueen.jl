@@ -1,5 +1,5 @@
 const baudrate = 115200#9600##921600#
-const nleds = 120 - 6
+const nleds = 120 - 7
 
 struct Strip
   sp::SerialPort
