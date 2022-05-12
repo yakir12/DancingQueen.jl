@@ -22,7 +22,7 @@ function figure(frame, roi, x, ab, settings)
                          (; label = "", range = 0:30),
                          (label = "", range = range(0, π/2, 50), format = round2deg))
   dynamicgrid = SliderGrid(controls[2,:], 
-                           (label = "a", range = 0:0.1:2, format = "{:.1f}"),
+                           (label = "a", range = -2:0.1:2, startvalue = 0, format = "{:.1f}"),
                            (label = "b", range = range(0, step = 2π/nleds, length = nleds), format = round2deg))
   record = Toggle(fig, active = false)
   record_label = Label(fig, map(x -> x ? "Recording!" : "Not recording", record.active))

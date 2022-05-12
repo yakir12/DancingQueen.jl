@@ -45,7 +45,7 @@ function oneiteration(frame, roi, rect, oldu, rotations, x, ab, settings)
   update_rect!(rect, point)
   frame[] = img
   roi[] = rect[]
-  @async update_log(log[], point, rotations[], settings[], img)
+  update_log(log[], point, rotations[], settings[], img)
 end
 
 function hotloop(frame, roi, x, ab, settings)

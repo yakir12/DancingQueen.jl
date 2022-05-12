@@ -29,7 +29,7 @@ end
 function Base.close(log::Log)
   log.open = false
   close(log.csvio)
-  save2vid(log.name)
+  @async save2vid(log.name)
 end
 
 torow(::Nothing, rotations, settings) = join((now(), missing, rotations, settings...), ',')
@@ -44,9 +44,11 @@ function update_log(log::Log, point, rotations, settings, img)
 end
 
 function save2vid(fldr)
-  files_in = joinpath(fldr, "*.jpg")
-  file_out = joinpath(fldr, "video.mp4")
-  ffmpeg_exe(`-framerate 15 -pattern_type glob -i $files_in -c:v libx264 -r 15 -pix_fmt gray -loglevel 16 $file_out`)
-  foreach(rm, glob(files_in))
-  @info "done saving $fldr"
+  if isdir(fldr) && !isempty(fldr)
+    files_in = joinpath(fldr, "*.jpg")
+    file_out = joinpath(fldr, "video.mp4")
+    ffmpeg_exe(`-framerate 15 -pattern_type glob -i $files_in -c:v libx264 -r 15 -pix_fmt gray -loglevel 16 $file_out`)
+    foreach(rm, glob(files_in))
+    @info "done saving $fldr"
+  end
 end
