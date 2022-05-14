@@ -1,4 +1,8 @@
-const wh = (640, 480)
+w = 640
+h = 480
+VideoIO.DEFAULT_CAMERA_OPTIONS["video_size"] = "$(w)x$h"
+VideoIO.DEFAULT_CAMERA_OPTIONS["framerate"] = 30
+const wh = (w, h)
 
 struct Camera
   device::String
