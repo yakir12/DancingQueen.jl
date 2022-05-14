@@ -1,3 +1,5 @@
+VideoIO.init_camera_devices()
+VideoIO.init_camera_settings()
 w = 640
 h = 480
 VideoIO.DEFAULT_CAMERA_OPTIONS["video_size"] = "$(w)x$h"
@@ -35,8 +37,6 @@ catch ex
 end
 
 function get_device()
-  VideoIO.init_camera_devices()
-  VideoIO.init_camera_settings()
   cameras = VideoIO.CAMERA_DEVICES
   i = findfirst(good_camera, cameras)
   isnothing(i) && throw("No camera found")
