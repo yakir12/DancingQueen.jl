@@ -1,9 +1,5 @@
-VideoIO.init_camera_devices()
-VideoIO.init_camera_settings()
-w = 640
-h = 480
-VideoIO.DEFAULT_CAMERA_OPTIONS["video_size"] = "$(w)x$h"
-VideoIO.DEFAULT_CAMERA_OPTIONS["framerate"] = 30
+const w = 640
+const h = 480
 const wh = (w, h)
 
 struct Camera
@@ -16,9 +12,9 @@ struct Camera
     o = opencamera(device; transcode = false)
     nb, buff = create_buffer(o)
     b = view(buff, 1:2:nb)
-    h, w = wh
-    Y = reshape(b, h, w)
-    img = colorview(Gray, normedview(view(Y, h:-1:1, 1:w)))
+    h1, w1 = wh
+    Y = reshape(b, h1, w1)
+    img = colorview(Gray, normedview(view(Y, h1:-1:1, 1:w1)))
     new(device, o, buff, img)
   end
 end
@@ -37,6 +33,10 @@ catch ex
 end
 
 function get_device()
+VideoIO.init_camera_devices()
+VideoIO.init_camera_settings()
+VideoIO.DEFAULT_CAMERA_OPTIONS["video_size"] = "$(w)x$h"
+VideoIO.DEFAULT_CAMERA_OPTIONS["framerate"] = 30
   cameras = VideoIO.CAMERA_DEVICES
   i = findfirst(good_camera, cameras)
   isnothing(i) && throw("No camera found")
