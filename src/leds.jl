@@ -29,9 +29,9 @@ end
 good_port(port) = try
   sp = open(port, baudrate)
   sleep(0.1)
+  good = occursin(r"arduino"i, LibSerialPort.sp_get_port_usb_manufacturer(sp))
   close(sp)
-  sleep(0.1)
-  return true
+  return good
 catch ex
   return false
 end
